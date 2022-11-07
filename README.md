@@ -25,7 +25,7 @@ This dataset, provided by University of California Irvine, is about bike-sharing
 **Please remember to update this section**
 
 -   Connor Doman: a 3rd year comp sci major.
--   Person 2: one sentence about you!
+-   ZAynb Alkhafadi: a student attending UBCO. 
 -   Person 3: one sentence about you!
 
 ## Images

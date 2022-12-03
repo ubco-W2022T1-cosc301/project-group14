@@ -39,7 +39,18 @@ def get_reg_users_from_week_df(df):
 
 
 def get_count_users_years_df(df):
-    return df[['date', 'count']].groupby(df['date'].map(lambda x: x.year)).sum().sort_values('count', ascending=False).rename({'date': 'Date', 'count': 'Total Users'}, axis=1)
+    return df[['date', 'count']].groupby(df['date'].map(lambda x: x.year)).sum(numeric_only=True).sort_values('count', ascending=False).rename({'date': 'Year', 'count': 'Total Users'}, axis=1)
+
+
+def get_annual_users_barplot(df):
+    frame = get_count_users_years_df(df)
+    ax = sns.barplot(data=frame, x=frame.index, y='Total Users')
+    ax.set_title('Total Users by Year')
+    ax.tick_params(bottom=False)
+    ax.set(xlabel='Year', ylabel='Total Users')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
+    sns.despine()
+    return ax
 
 
 def avg_reg_users_barplot(df):

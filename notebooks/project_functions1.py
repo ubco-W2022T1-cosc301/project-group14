@@ -1,4 +1,7 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import math
 
 def load_and_process(url_or_path_to_csv_file):
     # Method Chain 1 (Load data and deal with missing data)
@@ -21,13 +24,38 @@ def load_and_process(url_or_path_to_csv_file):
         .replace({"weekday": days, "hour": hours})
         .sort_values("count", ascending=False)[new_col_order]
     )
+
+    df1['date'] = pd.to_datetime(df1['date'], format='%Y-%m-%d')
     
     return df1
+
 
 def get_avg_from_month(df, month, day='', year=''):
     return df[['date', 'count']].loc[df['date'].str.contains(f'{str(year)}-{str(month)}-{str(day)}')].groupby(['date',], as_index=False).sum().sort_values('count', ascending=False).mean(numeric_only=True).round()[0]
 
 
+def get_reg_users_from_week_df(df):
+    return df[['weekday', 'registered']].groupby(['weekday',], as_index=False).mean().round(0).sort_values('registered', ascending=False).rename({'weekday': 'Weekday', 'registered': 'Avg. Registered Users'}, axis=1)
+
+
+def get_count_users_years_df(df):
+    return df[['date', 'count']].groupby(df['date'].map(lambda x: x.year)).sum().sort_values('count', ascending=False).rename({'date': 'Date', 'count': 'Total Users'}, axis=1)
+
+
+def avg_reg_users_barplot(df):
+    
+    ax = sns.barplot(data=get_reg_users_from_week_df(df), x='Weekday', y='Avg. Registered Users', palette=sns.color_palette("hls", 7))
+    ax.set_title('Average Registered Users by Weekday')
+    ax.tick_params(bottom=False)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=40, ha="right")
+    sns.despine()
+    return ax
+
+
+def save_fig(ax, filename):
+    fig = ax.get_figure()
+    fig.subplots_adjust(bottom=0.25)
+    fig.savefig(filename)
 
 if __name__ == "__main__":
     df = load_and_process("data/raw/Bike-Sharing-Dataset/hour.csv")

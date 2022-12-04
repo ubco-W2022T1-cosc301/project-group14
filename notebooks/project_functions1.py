@@ -63,9 +63,56 @@ def avg_reg_users_barplot(df):
     return ax
 
 
+def create_count_by_holiday_barplot(df):
+    # SELECT SUM(count) AS totalCount FROM df_to_analyze WHERE holiday = 1 GROUP BY date HAVING ORDER BY totalCount DESC;
+    holiday = df[['date', 'count']].loc[df['holiday'] == 1].groupby(['date',], as_index=False).sum().sort_values('count', ascending=False)
+    #.groupby(['holiday'], as_index=False).mean().round().sort_values('count', ascending=False)
+
+    xlabels = holiday['date'].dt.strftime('%Y-%m-%d').unique()
+
+    mnth_day = holiday['date'].dt.strftime('%m-%d').unique()
+
+    holiday_strings = {
+        '01-02': 'New Years',
+        '01-16': 'Martin Luther King Jr. Day',
+        '01-17': 'Martin Luther King Jr. Day',
+        '02-20': 'Presidents Day',
+        '02-21': 'Presidents Day',
+        '04-15': 'Emancipation Day (DC)',
+        '04-16': 'Emancipation Day (DC)',
+        '05-28': 'Memorial Day',
+        '05-30': 'Memorial Day',
+        '07-04': 'Independence Day',
+        '09-03': 'Labor Day',
+        '09-05': 'Labor Day',
+        '10-08': 'Columbus Day',
+        '10-10': 'Columbus Day',
+        '11-11': 'Veterans Day',
+        '11-12': 'Veterans Day',
+        '11-22': 'Thanksgiving',
+        '11-24': 'Thanksgiving',
+        '12-25': 'Christmas Day',
+        '12-26': 'Christmas Day',
+    }
+
+    for k,v in holiday_strings.items():
+        for d in range(len(xlabels)):
+            if k in xlabels[d]:
+                xlabels[d] = f"{v} ({xlabels[d][:4]})"
+
+
+    ax = sns.barplot(data=holiday, y='date', x='count', palette='Blues_d')
+    ax.set_title("Total Count of Bikes Rented on Holidays")
+    ax.set(xlabel='Count', ylabel='Holiday')
+    ax.set_yticklabels(labels=xlabels)
+    sns.despine()
+    return ax
+
+
 def save_fig(ax, filename):
     fig = ax.get_figure()
-    fig.subplots_adjust(bottom=0.25)
+    # fig.subplots_adjust(bottom=0.25)
+    fig.tight_layout()
     fig.savefig(filename)
 
 if __name__ == "__main__":

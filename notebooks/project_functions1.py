@@ -30,6 +30,13 @@ def load_and_process(url_or_path_to_csv_file):
     return df1
 
 
+def save_fig(ax, filename):
+    fig = ax.get_figure()
+    # fig.subplots_adjust(bottom=0.25)
+    fig.tight_layout()
+    fig.savefig(filename)
+
+
 def get_avg_from_month(df, month, day='', year=''):
     return df[['date', 'count']].loc[df['date'].str.contains(f'{str(year)}-{str(month)}-{str(day)}')].groupby(['date',], as_index=False).sum().sort_values('count', ascending=False).mean(numeric_only=True).round()[0]
 
@@ -109,11 +116,26 @@ def create_count_by_holiday_barplot(df):
     return ax
 
 
-def save_fig(ax, filename):
-    fig = ax.get_figure()
-    # fig.subplots_adjust(bottom=0.25)
-    fig.tight_layout()
-    fig.savefig(filename)
+def month_2012_weather_barplot(df, m, mname=''):
+    weather_df = df[['weather', 'date']].loc[lambda row: row['date'].dt.strftime("%Y-%m") == f"2012-{str(m).zfill(2)}"]
+    ax = sns.countplot(data=weather_df, x='weather', hue='weather', dodge=False, palette='Blues_d')
+    ax.set_title(f"Counts of Weather Conditions in {mname} 2012")
+    ax.set(xlabel='Weather', ylabel='Count')
+    ax.tick_params(bottom=False)
+    ax.get_legend().remove()
+    sns.despine()
+    return ax
+
+
+def save_april_weather_barplot(df):
+    save_fig(month_2012_weather_barplot(df, 4, "April"), '../images/april_weather_barplot.png')
+
+def save_march_weather_barplot(df):
+    save_fig(month_2012_weather_barplot(df, 3, "March"), '../images/march_weather_barplot.png')
+
+
+def avg_temp_from_month(df, month):
+    return f"{(df[['temp', 'date']].loc[lambda row: row['date'].dt.strftime('%m') == str(month).zfill(2)].mean(numeric_only=True).round(1)[0] * 39):.2f}" + '°C'
 
 if __name__ == "__main__":
     df = load_and_process("data/raw/Bike-Sharing-Dataset/hour.csv")

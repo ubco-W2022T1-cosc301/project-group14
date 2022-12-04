@@ -47,6 +47,8 @@ _Please note, the researcher defines weather values as follows:_
 
 A possible explanation for this disproportionate response is the weather on that day. According to the figures above, the weather in March was approximately the same as that of April, but the average temperature was about 4°C warmer (15.6° vs. 19.5°). If this is not the explanation, the difficulty in finding an answer as to what the holiday on April 16th was might indicate the data collector incorrectly entered this date as a holiday.
 
+My complete analysis can be found in [this notebook](notebooks/analysis1.ipynb).
+
 ## Question 2 (Jan)
 
 ### Results
@@ -64,3 +66,5 @@ It's shown in the Figure above titled "The average of casual vs registered users
 In the second Figure titled "which month had the lowest amount of bike rentals between registered and casual users", theres a trendline for registered users: more and more are becoming registered throughout the months. Casual users have their peaks during the warmer seasons, and their lows throughout the colder ones. [You can find the full analysis notebook here, including the code and the data here.](http://localhost:8888/lab/tree/notebooks/analysis3.ipynb)
 
 ## Summary Conclusion
+
+Bikesharing services rely on user data to determine system loads and demographic properties. With this aggregated data it's intriguing to see what kind of users ride these bikes and the habits of people throughout the year. Hopefully these rideshare services continue to expand and improve public perception of pedestrian commuting as doing so not only improves the lives of individuals but also reduces pollution and fosters communities.

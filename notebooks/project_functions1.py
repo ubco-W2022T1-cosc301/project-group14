@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math
 
 def load_and_process(url_or_path_to_csv_file):
-    # Method Chain 1 (Load data and deal with missing data)
+    '''Method Chain 1 (Loads data and reorganizes columns)'''
     
     new_col_names = ['instant', 'dteday', 'season', 'yr', 'mnth', 'hr', 'holiday', 'weekday', 'workingday', 'weathersit', 'temp', 'atemp', 'hum', 'windspeed', 'casual', 'registered', 'cnt']
     new_col_order = ['date', 'hour', 'count', 'casual', 'registered', 'season', 'holiday', 'weekday', 'workingday', 'weather', 'temp', 'humidity']
@@ -25,31 +25,44 @@ def load_and_process(url_or_path_to_csv_file):
         .sort_values("count", ascending=False)[new_col_order]
     )
 
+    # make date datetime object
     df1['date'] = pd.to_datetime(df1['date'], format='%Y-%m-%d')
     
     return df1
 
 
 def save_fig(ax, filename):
+    '''Saves a plot axes object to a file'''
     fig = ax.get_figure()
     # fig.subplots_adjust(bottom=0.25)
     fig.tight_layout()
     fig.savefig(filename)
 
 
-def get_avg_from_month(df, month, day='', year=''):
-    return df[['date', 'count']].loc[df['date'].str.contains(f'{str(year)}-{str(month)}-{str(day)}')].groupby(['date',], as_index=False).sum().sort_values('count', ascending=False).mean(numeric_only=True).round()[0]
+def get_avg_from_month(df, month, day=0, year=0):
+    '''Returns the average number of users for a given month. This also accepts a day and year parameter for specificity.'''
+    dateRange = df
+    if year != 0:
+        dateRange = dateRange[dateRange['date'].dt.year == year]
+    dateRange = dateRange[dateRange['date'].dt.month == month]
+    if day != 0:
+        dateRange = dateRange[dateRange['date'].dt.day == day]
 
+    return dateRange['count'].mean().round()
+    
 
 def get_reg_users_from_week_df(df):
+    '''Returns a dataframe with the average number of registered users for each weekday.'''
     return df[['weekday', 'registered']].groupby(['weekday',], as_index=False).mean().round(0).sort_values('registered', ascending=False).rename({'weekday': 'Weekday', 'registered': 'Avg. Registered Users'}, axis=1)
 
 
 def get_count_users_years_df(df):
+    '''Returns a dataframe with the total number of users for each year.'''
     return df[['date', 'count']].groupby(df['date'].map(lambda x: x.year)).sum(numeric_only=True).sort_values('count', ascending=False).rename({'date': 'Year', 'count': 'Total Users'}, axis=1)
 
 
 def get_annual_users_barplot(df):
+    '''Returns a barplot of the total number of users for each year.'''
     frame = get_count_users_years_df(df)
     ax = sns.barplot(data=frame, x=frame.index, y='Total Users')
     ax.set_title('Total Users by Year')
@@ -61,7 +74,7 @@ def get_annual_users_barplot(df):
 
 
 def avg_reg_users_barplot(df):
-    
+    '''Returns a barplot of the average number of registered users for each weekday.'''
     ax = sns.barplot(data=get_reg_users_from_week_df(df), x='Weekday', y='Avg. Registered Users', palette=sns.color_palette("hls", 7))
     ax.set_title('Average Registered Users by Weekday')
     ax.tick_params(bottom=False)
